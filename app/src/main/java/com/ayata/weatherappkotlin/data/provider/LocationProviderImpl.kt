@@ -6,13 +6,14 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.content.ContextCompat
 import com.ayata.weatherappkotlin.data.entity.WeatherLocation
+import com.ayata.weatherappkotlin.internal.Constants.Companion.CUSTOM_LOCATION
+import com.ayata.weatherappkotlin.internal.Constants.Companion.USE_DEVICE_LOCATION
 import com.ayata.weatherappkotlin.internal.LocationPermissionNotGrantedException
 import com.ayata.weatherappkotlin.internal.asDeferred
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Deferred
 
-const val USE_DEVICE_LOCATION = "USE_DEVICE_LOCATION"
-const val CUSTOM_LOCATION = "CUSTOM_LOCATION"
+
 
 class LocationProviderImpl(
     private var fusedLocationProviderClient: FusedLocationProviderClient,

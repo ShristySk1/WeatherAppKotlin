@@ -47,7 +47,10 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
 }
-
+//for groupie viewholder->getting id of layout
+androidExtensions {
+    experimental = true
+}
 dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'

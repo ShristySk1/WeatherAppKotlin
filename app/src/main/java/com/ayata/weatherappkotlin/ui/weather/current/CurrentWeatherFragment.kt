@@ -1,6 +1,7 @@
 package com.ayata.weatherappkotlin.ui.weather.current
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.ayata.weatherappkotlin.R
 import com.ayata.weatherappkotlin.ui.base.ScopedFragment
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_current_weather.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -48,7 +50,7 @@ class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
 //        }
     }
 
-    private fun bindUI() = launch {
+    private fun bindUI() = launch(Dispatchers.Main) {
         val currentWeather = viewModel.weather.await()
         val weatherLocation = viewModel.weatherLocation.await()
         weatherLocation.observe(viewLifecycleOwner, Observer {
@@ -70,14 +72,15 @@ class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
         })
     }
 
-    //        private fun bindUI() {
+//            private fun bindUI() {
 //        Log.d("fetchcome", "bindUI: ");
 //        viewModel.currentWeatherData.observe(viewLifecycleOwner, Observer {
+//            group_loading.visibility=View.GONE
 //            if (it == null) {
 //                Log.d("fetchinside", "bindUI: null");
 //                return@Observer
-//            }
-////            textView.text = it.toString()
+//         }
+//           tv_temp.text = it.toString()
 //        })
 //    }
     private fun chooseLocalizedUnitAbbreviation(metric: String, imperial: String): String {

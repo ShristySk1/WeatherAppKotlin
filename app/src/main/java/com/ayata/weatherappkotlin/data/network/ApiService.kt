@@ -2,6 +2,8 @@ package com.ayata.weatherappkotlin.data.network
 
 import com.ayata.weatherappkotlin.data.network.response.CurrentWeatherResponse
 import com.ayata.weatherappkotlin.data.network.response.FutureWeatherResponse
+import com.ayata.weatherappkotlin.internal.Constants.Companion.API_KEY
+import com.ayata.weatherappkotlin.internal.Constants.Companion.BASE_URL
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -9,8 +11,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-const val API_KEY = "606f7544be944ccd87f75930200106"
-const val BASE_URL = "https://api.weatherapi.com/"
 
 
 /**

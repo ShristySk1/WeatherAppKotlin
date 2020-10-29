@@ -11,6 +11,7 @@
             android:key="CUSTOM_LOCATION"
             android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:defaultValue="Los Angeles"
             android:summary="The location for which the weather is displayed"
             android:title="Location"
             android:dependency="USE_DEVICE_LOCATION"/>

@@ -12,6 +12,7 @@ import com.ayata.weatherappkotlin.data.provider.UnitProviderImpl
 import com.ayata.weatherappkotlin.data.repository.ForcastRepository
 import com.ayata.weatherappkotlin.data.repository.ForcastRepositoryImpl
 import com.ayata.weatherappkotlin.ui.weather.current.CurrentWeatherViewModelFactory
+import com.ayata.weatherappkotlin.ui.weather.future.list.FutureListWeatherViewModelFactory
 import com.google.android.gms.location.LocationServices
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
@@ -29,6 +30,7 @@ class ForcastApplication : Application(), KodeinAware {
         bind() from singleton { ForcastDatabase(instance()) }
         bind() from singleton { instance<ForcastDatabase>().getForcastDao() }
         bind() from singleton { instance<ForcastDatabase>().getWeatherLocationDao() }
+        bind() from singleton { instance<ForcastDatabase>().getFutureWeatherDao() }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { ApiService(instance()) }
         bind<WeatherNetworkDatasource>() with singleton { WeatherNetworkDatasourceImpl(instance()) }
@@ -39,11 +41,13 @@ class ForcastApplication : Application(), KodeinAware {
                 instance(),
                 instance(),
                 instance(),
+                instance(),
                 instance()
             )
         }
         bind<UnitProvider>() with singleton { UnitProviderImpl(instance()) }
         bind() from provider { CurrentWeatherViewModelFactory(instance(), instance()) }
+        bind() from provider { FutureListWeatherViewModelFactory(instance(), instance()) }
     }
 
     override fun onCreate() {
