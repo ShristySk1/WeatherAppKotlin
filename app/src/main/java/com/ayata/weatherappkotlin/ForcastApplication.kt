@@ -2,6 +2,7 @@ package com.ayata.weatherappkotlin
 
 import android.app.Application
 import android.content.Context
+import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
 import com.ayata.weatherappkotlin.data.db.ForcastDatabase
 import com.ayata.weatherappkotlin.data.network.*
@@ -12,18 +13,18 @@ import com.ayata.weatherappkotlin.data.provider.UnitProviderImpl
 import com.ayata.weatherappkotlin.data.repository.ForcastRepository
 import com.ayata.weatherappkotlin.data.repository.ForcastRepositoryImpl
 import com.ayata.weatherappkotlin.ui.weather.current.CurrentWeatherViewModelFactory
+import com.ayata.weatherappkotlin.ui.weather.future.detail.FutureDetailWeatherViewModelFactory
 import com.ayata.weatherappkotlin.ui.weather.future.list.FutureListWeatherViewModelFactory
 import com.google.android.gms.location.LocationServices
+
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
+import org.kodein.di.generic.*
+import org.threeten.bp.LocalDate
 
-class ForcastApplication : Application(), KodeinAware {
+class ForcastApplication : MultiDexApplication(), KodeinAware {
     override val kodein = Kodein.lazy {
         import(androidXModule(this@ForcastApplication))
 
@@ -32,7 +33,7 @@ class ForcastApplication : Application(), KodeinAware {
         bind() from singleton { instance<ForcastDatabase>().getWeatherLocationDao() }
         bind() from singleton { instance<ForcastDatabase>().getFutureWeatherDao() }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
-        bind() from singleton { ApiService(instance()) }
+        bind() from singleton {ApiService(instance())}
         bind<WeatherNetworkDatasource>() with singleton { WeatherNetworkDatasourceImpl(instance()) }
         bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
         bind<LocationProvider>() with singleton { LocationProviderImpl(instance(), instance()) }
@@ -48,6 +49,8 @@ class ForcastApplication : Application(), KodeinAware {
         bind<UnitProvider>() with singleton { UnitProviderImpl(instance()) }
         bind() from provider { CurrentWeatherViewModelFactory(instance(), instance()) }
         bind() from provider { FutureListWeatherViewModelFactory(instance(), instance()) }
+        //detailDate is dynamic so
+        bind() from factory{detailDate:LocalDate -> FutureDetailWeatherViewModelFactory(detailDate, instance(), instance()) }
     }
 
     override fun onCreate() {

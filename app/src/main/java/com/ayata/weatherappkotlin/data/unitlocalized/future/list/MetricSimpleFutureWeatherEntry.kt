@@ -1,4 +1,4 @@
-package com.ayata.weatherappkotlin.data.unitlocalized.future
+package com.ayata.weatherappkotlin.data.unitlocalized.future.list
 
 import androidx.room.ColumnInfo
 import org.threeten.bp.LocalDate

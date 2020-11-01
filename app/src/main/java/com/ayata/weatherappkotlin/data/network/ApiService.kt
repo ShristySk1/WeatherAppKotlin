@@ -4,13 +4,14 @@ import com.ayata.weatherappkotlin.data.network.response.CurrentWeatherResponse
 import com.ayata.weatherappkotlin.data.network.response.FutureWeatherResponse
 import com.ayata.weatherappkotlin.internal.Constants.Companion.API_KEY
 import com.ayata.weatherappkotlin.internal.Constants.Companion.BASE_URL
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-
 
 
 /**
@@ -24,15 +25,16 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("v1/current.json")
-    suspend fun getCurrentWeather(
+     fun getCurrentWeather(
         @Query("q") location: String,
-    ): CurrentWeatherResponse
+    ): Deferred<CurrentWeatherResponse>
 
     @GET("v1/forecast.json")
-    suspend fun getFutureWeather(
+     fun getFutureWeather(
         @Query("q") location: String,
-        @Query("days")days:Int
-    ):FutureWeatherResponse
+        @Query("days") days: Int
+    ): Deferred<FutureWeatherResponse>
+
     companion object {
 
         /**
@@ -40,23 +42,26 @@ interface ApiService {
          *  Advantage of using invoke function is that,
          *  we can directly call <b>ApiService()</b> instead of ApiService.functionName()
          */
-
-        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor): ApiService {
+        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor):ApiService {
             val requestInterceptor = Interceptor { chain ->
                 val httpUrl =
-                    chain.request().url
+                    chain.request().url()
                         .newBuilder().addQueryParameter("key", API_KEY)
                         .build()
                 val request = chain.request().newBuilder().url(httpUrl).build()
                 return@Interceptor chain.proceed(request)
             }
-            val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor)
+            val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(requestInterceptor)
                 .addInterceptor(connectivityInterceptor)
                 .build()
-
-            val retrofit = Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
-            return retrofit.create(ApiService::class.java)
+             return Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl(BASE_URL)
+                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build().create(ApiService::class.java)
         }
+
     }
 }

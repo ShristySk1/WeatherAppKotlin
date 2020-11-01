@@ -15,17 +15,27 @@ class WeatherNetworkDatasourceImpl(private val apiService: ApiService) : Weather
         get() = _downloadCurrentWeather
 
     override suspend fun fetchCurrentWeather(location: String) {
-        try {
-            val fetchCurrentWeather = apiService.getCurrentWeather(location)
-            _downloadCurrentWeather.postValue(fetchCurrentWeather)
+//        try {
 
-        } catch (e: Exception) {
-            when (e) {
-                is NoConnectivityException -> Log.d("Connectivity", "No Connectivity.", e)
-                else -> e.stackTrace
-            }
+            val fetchCurrentWeather = apiService.getCurrentWeather(location).await()
 
-        }
+//            if(fetchCurrentWeatherResponse.isSuccessful){
+                Log.d("testresponse", "fetchCurrentWeather: "+fetchCurrentWeather);
+                _downloadCurrentWeather.postValue(fetchCurrentWeather)
+//            }else{
+//                Log.d("testresponse", "not successful: ");
+//            }
+
+
+//        } catch (e: Exception) {
+//            when (e) {
+//                is NoConnectivityException -> Log.d("Connectivity", "No Connectivity.", e)
+//                else -> {
+//                    Log.d("testresponse faile", "fetchCurrentWeather: ");
+//                    e.stackTrace}
+//            }
+//
+//        }
     }
 
     override val downloadFutureWeather: LiveData<FutureWeatherResponse>
@@ -34,9 +44,16 @@ class WeatherNetworkDatasourceImpl(private val apiService: ApiService) : Weather
     override suspend fun fetchFutureWeather(location: String) {
         try {
 
-            val fetchFutureWeather = apiService.getFutureWeather(location, FORCAST_DAYS_COUNT)
-            _downloadFutureWeather.postValue(fetchFutureWeather)
-            Log.d("fetchdatasize", "fetchFutureWeather: "+fetchFutureWeather.futureWeatherEntries.entries.size);
+            val fetchFutureWeather = apiService.getFutureWeather(location, FORCAST_DAYS_COUNT).await()
+//            if(fetchFutureWeatherResponse.isSuccessful) {
+                _downloadFutureWeather.postValue(fetchFutureWeather)
+                Log.d(
+                    "fetchdatasize",
+                    "fetchFutureWeather: " + fetchFutureWeather.futureWeatherEntries.entries.size
+                );
+//            }else{
+//                Log.d("testresponseFuture", "not successful: ");
+//            }
 
         } catch (e: Exception) {
             when (e) {

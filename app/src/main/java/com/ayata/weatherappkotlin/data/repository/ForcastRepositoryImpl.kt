@@ -11,7 +11,8 @@ import com.ayata.weatherappkotlin.data.network.response.CurrentWeatherResponse
 import com.ayata.weatherappkotlin.data.network.response.FutureWeatherResponse
 import com.ayata.weatherappkotlin.data.provider.LocationProvider
 import com.ayata.weatherappkotlin.data.unitlocalized.current.UnitSpecificCurrentWeatherEntry
-import com.ayata.weatherappkotlin.data.unitlocalized.future.UnitSpecificFutureWeatherEntry
+import com.ayata.weatherappkotlin.data.unitlocalized.future.detail.UnitSpecificDetailFutureWeatherEntry
+import com.ayata.weatherappkotlin.data.unitlocalized.future.list.UnitSpecificFutureWeatherEntry
 import com.ayata.weatherappkotlin.internal.Constants.Companion.FORCAST_DAYS_COUNT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -73,6 +74,15 @@ class ForcastRepositoryImpl(
         }
     }
 
+    override fun getWeatherDetailByDate(
+        isMetric: Boolean,
+        date: LocalDate
+    ): LiveData<out UnitSpecificDetailFutureWeatherEntry> {
+        return if (isMetric) futureWeatherDao.getDetailWeatherByDateMetric(date) else futureWeatherDao.getDetailWeatherByDateImperial(
+            date = date
+        )
+    }
+
     private suspend fun persistFetchCurrentWeather(fetchWeather: CurrentWeatherResponse) {
         Log.d("fetchmeinsert", "getCurrentWeather: ");
         currentWeatherDao.upsert(fetchWeather.currentWeatherEntry)
@@ -94,6 +104,7 @@ class ForcastRepositoryImpl(
     private suspend fun initWeatherData() {
         val lastWeatherLocation = weatherLocationDao.getWeatherLocationNonLive()
         if (lastWeatherLocation == null || locationProvider.hasLocationChanged(lastWeatherLocation)) {
+//        if (lastWeatherLocation == null) {
             fetchCurrentWeather()
             fetchFutureWeather()
             return
@@ -110,12 +121,13 @@ class ForcastRepositoryImpl(
 
     private suspend fun fetchFutureWeather() {
         weatherNetworkDatasource.fetchFutureWeather(locationProvider.getPreferredLocationString())
+//        weatherNetworkDatasource.fetchFutureWeather("Kathmandu")
     }
 
     private suspend fun isFetchFutureNeeded(): Boolean {
         val today = LocalDate.now()
-        val futureWeatherCount=futureWeatherDao.countFutureWeather(today)
-        return futureWeatherCount< FORCAST_DAYS_COUNT
+        val futureWeatherCount = futureWeatherDao.countFutureWeather(today)
+        return futureWeatherCount < FORCAST_DAYS_COUNT
 
     }
 

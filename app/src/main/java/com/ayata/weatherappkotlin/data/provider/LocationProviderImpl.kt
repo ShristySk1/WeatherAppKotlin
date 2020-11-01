@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.ayata.weatherappkotlin.data.entity.WeatherLocation
 import com.ayata.weatherappkotlin.internal.Constants.Companion.CUSTOM_LOCATION
@@ -14,11 +15,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Deferred
 
 
-
 class LocationProviderImpl(
     private var fusedLocationProviderClient: FusedLocationProviderClient,
     context: Context
-) : PreferenceProvider(context), LocationProvider {
+) : PreferenceProvider(context),LocationProvider {
     override suspend fun hasLocationChanged(lastWeatherLocation: WeatherLocation): Boolean {
         var deviceLlocationChanged = try {
             hasDeviceLocationChanged(lastWeatherLocation)
@@ -27,23 +27,31 @@ class LocationProviderImpl(
         }
         return deviceLlocationChanged || hasCustomLocationChanged(lastWeatherLocation);
     }
+
     override suspend fun getPreferredLocationString(): String {
 
         if (isUsingDeviceLocation()) {
+            Log.d("deviceLocationtext", "getPreferredLocationString: ");
             try {
                 val deviceLocation =
                     getLastDeviceLocation().await() ?: return "${getCustomLocationName()}"
-
+                Log.d(
+                    "deviceLocation",
+                    "getPreferredLocationString: ${deviceLocation.latitude},${deviceLocation.longitude}"
+                )
                 return "${deviceLocation.latitude},${deviceLocation.longitude}"
-            }catch (exception: LocationPermissionNotGrantedException) {
+            } catch (exception: LocationPermissionNotGrantedException) {
+                Log.d("deviceLocationtext", "getPreferredLocationString: catch");
                 return "${getCustomLocationName()}"
             }
         } else {
+            Log.d("deviceLocationtext", "not even ot: ");
             return "${getCustomLocationName()}"
         }
     }
+
     private fun hasCustomLocationChanged(lastWeatherLocation: WeatherLocation): Boolean {
-        if(!isUsingDeviceLocation()) {
+        if (!isUsingDeviceLocation()) {
             val customLocationName = getCustomLocationName()
             return customLocationName != lastWeatherLocation.name
         }
@@ -67,13 +75,13 @@ class LocationProviderImpl(
 
     @SuppressLint("MissingPermission")
     private fun getLastDeviceLocation(): Deferred<Location?> {
+        Log.d("locationfetch", "getLastDeviceLocation: ");
         return if (hasLocationPermission()) fusedLocationProviderClient.lastLocation.asDeferred() else throw LocationPermissionNotGrantedException()
     }
 
     private fun isUsingDeviceLocation(): Boolean {
         return preferences.getBoolean(USE_DEVICE_LOCATION, true)
     }
-
 
 
     private fun hasLocationPermission(): Boolean {

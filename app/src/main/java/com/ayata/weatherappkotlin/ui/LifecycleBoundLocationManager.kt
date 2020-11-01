@@ -1,6 +1,7 @@
 package com.ayata.weatherappkotlin.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -27,6 +28,7 @@ class LifecycleBoundLocationManager(
     @SuppressLint("MissingPermission")
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun startLocationUpdate() {
+        Log.d("updatecheckinggps", "startLocationUpdate: ");
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 

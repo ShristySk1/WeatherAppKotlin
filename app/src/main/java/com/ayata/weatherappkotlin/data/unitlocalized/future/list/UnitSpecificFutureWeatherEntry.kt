@@ -1,4 +1,4 @@
-package com.ayata.weatherappkotlin.data.unitlocalized.future
+package com.ayata.weatherappkotlin.data.unitlocalized.future.list
 
 import org.threeten.bp.LocalDate
 

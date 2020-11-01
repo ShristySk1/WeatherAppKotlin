@@ -1,8 +1,9 @@
 package com.ayata.weatherappkotlin.ui.weather.future.list
 
 import com.ayata.weatherappkotlin.R
-import com.ayata.weatherappkotlin.data.unitlocalized.future.MetricSimpleFutureWeatherEntry
-import com.ayata.weatherappkotlin.data.unitlocalized.future.UnitSpecificFutureWeatherEntry
+import com.ayata.weatherappkotlin.data.unitlocalized.future.list.MetricSimpleFutureWeatherEntry
+import com.ayata.weatherappkotlin.data.unitlocalized.future.list.UnitSpecificFutureWeatherEntry
+
 import com.bumptech.glide.Glide
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
